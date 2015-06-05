@@ -51,6 +51,25 @@
  */
 #include <string.h>
 
+char* strecpy(char*, char*, char*);
+char* p9strdup(char*);
+int cistrncmp(char*, char*, int);
+int cistrcmp(char*, char*);
+char* cistrstr(char*, char*);
+int tokenize(char*, char**, int);
+
+void* refretain(void*);
+void refrelease(void*);
+void refcount(void*);
+static inline void __refreplace(void** var, void* val)
+{
+    void* doomed = *var;
+    *var = val;
+    refrelease(doomed);
+}
+#define refreplace(var, val) \
+    __refreplace((void**)var, val);
+
 /*
  * Rune Definitions and Routines
  */
@@ -61,14 +80,16 @@
 #define Runemax   0x10FFFF /*< Maximum rune value */
 #define Runemask  0x1FFFFF /*< All bits used by a rune */
 
-/*
 typedef uint32_t Rune;
 
+/* Single source */
 int runetochar(char*, Rune*);
 int chartorune(Rune*, char*);
 int runelen(long);
 int runenlen(Rune*, int);
 int fullrune(char*, int);
+
+/* Multiple Sources */
 int utflen(char*);
 int utfnlen(char*, long);
 char* utfrune(char*, long);
@@ -89,6 +110,7 @@ Rune* runestrrchr(Rune*, Rune);
 long  runestrlen(Rune*);
 Rune* runestrstr(Rune*, Rune*);
 
+/* Single Source */
 Rune tolowerrune(Rune);
 Rune totitlerune(Rune);
 Rune toupperrune(Rune);
@@ -100,7 +122,6 @@ int islowerrune(Rune);
 int isspacerune(Rune);
 int istitlerune(Rune);
 int isupperrune(Rune);
-*/
 
 /*
  * I/O Routines
@@ -133,7 +154,7 @@ int isupperrune(Rune);
 //    Bend
 //};
 
-typedef struct Biobuf {
+typedef struct iobuf {
     int icount;     /* neg num of bytes at eob */
     int ocount;     /* num of bytes at bob */
     int rdline;     /* num of bytes after rdline */
@@ -147,7 +168,7 @@ typedef struct Biobuf {
     unsigned char*  ebuf;       /* pointer to end of buffer */
     unsigned char*  gbuf;       /* pointer to good data in buf */
     unsigned char   b[Bungetsize+Bsize];
-} Biobuf;
+} iobuf;
 
 /*
 #define BGETC(bp)\
@@ -194,6 +215,31 @@ int Bungetrune(Biobuf*);
 long Bwrite(Biobuf*, void*, long);
 int Bvprint(Biobuf*, char*, va_list);
 */
+
+int iobuffered(iobuf*);
+iobuf* iofdopen(int, int);
+int iofildes(iobuf*);
+int ioflush(iobuf*);
+int iogetc(iobuf*);
+int iogetd(iobuf*, double*);
+long iogetrune(iobuf*);
+int ioinit(iobuf*, int, int);
+int ioinits(iobuf*, int, int, unsigned char*, int);
+int iolinelen(iobuf*);
+long long iooffset(iobuf*);
+iobuf* ioopen(char*, int);
+int ioprint(iobuf*, char*, ...);
+int ioputc(iobuf*, int);
+int ioputrune(iobuf*, long);
+void* iordline(iobuf*, int);
+char* iordstr(iobuf*, int, int);
+long ioread(iobuf*, void*, long);
+long long seek(iobuf*, long long, int);
+int ioterm(iobuf*);
+int ioungetc(iobuf*);
+int ioungetrune(iobuf*);
+long iowrite(iobuf*, void*, long);
+int iovprint(iobuf*, char*, va_list);
 
 /*
  * New Features
