@@ -206,7 +206,7 @@ void exits(char*);
  */
 #ifndef NO_MAIN_WRAPPER
     #define main user_main
-    extern void user_main(int, char**);
 #endif
+void user_main(int, char**);
 
 #endif /* LIBC_H */
