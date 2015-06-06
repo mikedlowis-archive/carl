@@ -56,24 +56,129 @@
  */
 #include <string.h>
 
-char* strecpy(char*, char*, char*);
-char* p9strdup(char*);
-int cistrncmp(char*, char*, int);
-int cistrcmp(char*, char*);
-char* cistrstr(char*, char*);
-int tokenize(char*, char**, int);
+/**
+ * Copies contents of string from input to output compressing C-language escape
+ * sequences to the equivalent character. A null byte is appended to the output.
+ * The space allocated for output must be at least as large as the space
+ * allocated for input.
+ *
+ * @return The output argument.
+ **/
+char* strccpy(char* output, const char* input);
 
-void* refallocate(size_t);
-void* refobject(size_t,void (*)(void*));
-void* refretain(void*);
-void refrelease(void*);
-size_t refcount(void*);
+/**
+ * Identical to strccpy() except that it returns a pointer to the appended NULL
+ * byte.
+ **/
+char* strcadd(char* output, const char* input);
+
+/**
+ * Copies contents of string from input to output expanding non-graphical
+ * characters to their C-language escape sequences. The output argument must
+ * point to a space large enough to hold the result. Worst case scenario this
+ * is 4 times the space allocated for the input argument. Characters in the
+ * exceptions string are not expanded.
+ *
+ * @return The output argument.
+ **/
+char* strecpy(char* output, const char* input, const char* ex);
+
+/**
+ * Identical to strecpy() except that it returns the address of the appended
+ * NULL byte.
+ **/
+char* streadd(char* output, const char* input, const char* ex);
+
+/**
+ * Makes a dynamically allocated duplicate of the input string.
+ *
+ * @return dynamically allocated copy of input.
+ **/
+char* strdup(const char* input);
+
+/**
+ * Performs a case-insensitive comparison of two strings.
+ *
+ * @return The result of comparison:
+ *         <0 - The first mismatched character is lower in value in str1 than str2
+ *          0 - The strings are equal
+ *         >0 - The first mismatched character is greater in value in str1 than str2
+ **/
+int cistrcmp(char* str1, char* str2);
+
+/**
+ * Performs a case-insensitive comparison of two strings up to num characters.
+ *
+ * @return The result of comparison:
+ *         <0 - The first mismatched character is lower in value in str1 than str2
+ *          0 - The strings are equal
+ *         >0 - The first mismatched character is greater in value in str1 than str2
+ **/
+int cistrncmp(char* str1, char* str2, int num);
+
+/**
+ * Returns a pointer to the first occurrences of str2 in str1. The string
+ * contents are compared case-insensitively.
+ *
+ * @return first occurrences of str2 in str1.
+ **/
+char* cistrstr(char* str1, char* str2);
+
+/**
+ * Breaks str up into tokens by replacing every whitespace character with the
+ * null character. Pointers to all of the non-empty tokens are placed into the
+ * args array. Processing will stop after max tokens are processed.
+ *
+ * @return The number of tokens processed.
+ **/
+int tokenize(char* str, char** args, int max);
+
+/**
+ * Allocates a reference counted block of memory.
+ *
+ * @return pointer to the allocated memory.
+ **/
+void* refallocate(size_t sz);
+
+/**
+ * Allocates a reference counted block of memory with an associated destructor
+ * to be called when the memory is freed.
+ *
+ * @return pointer to the allocated memory.
+ **/
+void* refobject(size_t sz,void (*destruct)(void*));
+
+/**
+ * Increments the reference count for a block of memory by one.
+ *
+ * @return The obj argument.
+ **/
+void* refretain(void* obj);
+
+/**
+ * Decrements the reference count for a block of memory by one. If this
+ * operation causes the reference count to reach 0 its associated destructor
+ * is called and the memory is freed. Any pointers still referencing this
+ * memory will be invalid and should no longer be used.
+ **/
+void refrelease(void* obj);
+
+/**
+ * Returns the current number of references to obj.
+ **/
+size_t refcount(void* obj);
+
+/**
+ * Replace the reference in var with the reference to val. The current value of
+ * var is first replaced with val and the old value of var is then released with
+ * refrelease().
+ **/
 void refreplace(void** var, void* val);
 
 /*
  * Rune Definitions and Routines
  */
-#define UTFmax    4        /*< Maximum number of bytes per rune */
+#define UTF_MAX   4        /*< Maximum number of bytes per rune */
 #define Runesync  0x80     /*< Upper bound of a UTF sequence */
 #define Runeself  0x80     /*< Upper bound of a rune sequence */
 #define Runeerror 0xFFFD   /*< Decoding error */
@@ -82,12 +187,38 @@ void refreplace(void** var, void* val);
 
 typedef uint32_t Rune;
 
-/* Single source */
-int runetochar(char*, Rune*);
-int chartorune(Rune*, char*);
-int runelen(long);
-int runenlen(Rune*, int);
-int fullrune(char*, int);
+/* Single source
+ *****************************************************************************/
+/**
+ * Copies one Rune from r to at most UTF_MAX bytes in s.
+ *
+ * @return The number of bytes copied.
+ **/
+int runetochar(char* s, Rune* r);
+
+/**
+ * Copies at most UTF_MAX bytes from s to one rune at r.
+ *
+ * @return The number of bytes copied.
+ **/
+int chartorune(Rune* r, char* s);
+
+/**
+ * Returns the number of bytes required to convert r to UTF.
+ **/
+int runelen(long r);
+
+/**
+ * Returns the number of bytes required to convert num runes pointed to by r
+ * into UTF-8
+ **/
+int runenlen(Rune* r, int num);
+
+/**
+ * Returns true if the string s of length n is long enough to be decoded as a
+ * Rune. Returns false otherwise.
+ **/
+bool fullrune(char* s, int n);
 
 /* Multiple Sources */
 int utflen(char*);
