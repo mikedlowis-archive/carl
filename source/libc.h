@@ -23,6 +23,11 @@
 #define nelem(x) (sizeof(x)/sizeof((x)[0]))
 #endif
 
+#ifndef container_of
+#define container_of(obj, type, member) \
+    (type*)((uintptr_t)obj - offsetof(type, member))
+#endif
+
 /*
  * Assertions
  */
@@ -58,17 +63,12 @@ int cistrcmp(char*, char*);
 char* cistrstr(char*, char*);
 int tokenize(char*, char**, int);
 
+void* refallocate(size_t);
+void* refobject(size_t,void (*)(void*));
 void* refretain(void*);
 void refrelease(void*);
-void refcount(void*);
-static inline void __refreplace(void** var, void* val)
-{
-    void* doomed = *var;
-    *var = val;
-    refrelease(doomed);
-}
-#define refreplace(var, val) \
-    __refreplace((void**)var, val);
+size_t refcount(void*);
+void refreplace(void** var, void* val);
 
 /*
  * Rune Definitions and Routines
