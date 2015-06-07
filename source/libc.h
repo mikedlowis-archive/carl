@@ -210,7 +210,7 @@ int runelen(long r);
 
 /**
  * Returns the number of bytes required to convert num runes pointed to by r
- * into UTF-8
+ * into UTF.
  **/
 int runenlen(Rune* r, int num);
 
@@ -220,39 +220,166 @@ int runenlen(Rune* r, int num);
  **/
 bool fullrune(char* s, int n);
 
-/* Multiple Sources */
-int utflen(char*);
-int utfnlen(char*, long);
-char* utfrune(char*, long);
-char* utfrrune(char*, long);
-char* utfutf(char*, char*);
-char* utfecpy(char*, char*, char*);
+/* Multiple Sources
+ *****************************************************************************/
+/**
+ * Returns the number runes that make up the string s.
+ **/
+int utflen(char* s);
 
-Rune* runestrcat(Rune*, Rune*);
-Rune* runestrchr(Rune*, Rune);
-int runestrcmp(Rune*, Rune*);
-Rune* runestrcpy(Rune*, Rune*);
-Rune* runestrncpy(Rune*, Rune*, long);
-Rune* runestrecpy(Rune*, Rune*, Rune*);
-Rune* runestrdup(Rune*);
-Rune* runestrncat(Rune*, Rune*, long);
-int runestrncmp(Rune*, Rune*, long);
+/**
+ * Returns the number of runes that make up the first n bytes of string s.
+ **/
+int utfnlen(char* s, long n);
+
+/**
+ * Returns a pointer to the first occurrence of rune c in string s.
+ **/
+char* utfrune(char* s, Rune c);
+
+/**
+ * Returns a pointer to the last occurrence of rune c in string s.
+ **/
+char* utfrrune(char* s, Rune c);
+
+/**
+ * Returns a pointer to the first occurrence of str2 in str1 or NULL if none
+ * found.
+ **/
+char* utfutf(char* str1, char* str2);
+
+/**
+ * Copies UTF sequences from str2 to str1 until a null sequence or estr1 is
+ * reached.
+ *
+ * @return Returns str1.
+ **/
+char* utfecpy(char* str1, char* estr1, char* str2);
+
+/**
+ * Copies the contents of str2 to the end of str1. Returns the str1 argument.
+ **/
+Rune* runestrcat(Rune* str1, Rune* str2);
+
+/**
+ * Copies up to num runes from str2 to the end of str1 and returns str1.
+ **/
+Rune* runestrncat(Rune* str1, Rune* str2, long num);
+
+/**
+ * Returns a pointer to the first occurrence of c in str.
+ **/
+Rune* runestrchr(Rune* str, Rune c);
+
+/**
+ * Returns a pointer to the last occurrence of c in str.
+ **/
 Rune* runestrrchr(Rune*, Rune);
-long  runestrlen(Rune*);
-Rune* runestrstr(Rune*, Rune*);
 
-/* Single Source */
-Rune tolowerrune(Rune);
-Rune totitlerune(Rune);
-Rune toupperrune(Rune);
-Rune tobaserune(Rune);
-int isalpharune(Rune);
-int isbaserune(Rune);
-int isdigitrune(Rune);
-int islowerrune(Rune);
-int isspacerune(Rune);
-int istitlerune(Rune);
-int isupperrune(Rune);
+/**
+ * Compares the contents of the two strings for equality.
+ * Returns the result of comparison:
+ *   <0 - The first mismatched character is lower in value in str1 than str2.
+ *    0 - The two strings are equal.
+ *   >0 - The first mismatched character is greater in value in str1 than str2.
+ **/
+int runestrcmp(Rune* str1, Rune*);
+
+/**
+ *
+ * Performs a comparison of two rune strings up to num characters.
+ *
+ * @return The result of comparison:
+ *         <0 - The first mismatched rune is lower in value in str1 than str2
+ *          0 - The strings are equal
+ *         >0 - The first mismatched rune is greater in value in str1 than str2
+ **/
+int runestrncmp(Rune* str1, Rune* str2, long num);
+
+/**
+ * Copies the contents of str2 to str1. Returns argument str1.
+ **/
+Rune* runestrcpy(Rune* str1, Rune* str2);
+
+/**
+ * Copies up to num runes from str2 to str1. Returns argument str1.
+ **/
+Rune* runestrncpy(Rune* str1, Rune* str2, long num);
+
+/**
+ * Copies contents of string from input to output compressing C-language escape
+ * sequences to the equivalent rune. A null byte is appended to the output.
+ * The space allocated for output must be at least as large as the space
+ * allocated for input.
+ *
+ * @return The output argument.
+ **/
+Rune* runestrccpy(Rune* output, Rune* input);
+
+/**
+ * Copies contents of string from input to output expanding non-graphical
+ * runes to their C-language escape sequences. The output argument must
+ * point to a space large enough to hold the result. Worst case scenario this
+ * is 4 times the space allocated for the input argument. Characters in the
+ * exceptions string are not expanded.
+ *
+ * @return The output argument.
+ **/
+Rune* runestrecpy(Rune* output, Rune* input, Rune* ex);
+
+/**
+ * Return a new dynamically allocated copy of str.
+ **/
+Rune* runestrdup(Rune* str);
+
+/**
+ * Return the number of runes that make up the string str.
+ **/
+long runestrlen(Rune* str);
+
+/**
+ *
+ * Returns a pointer to the first occurrences of str2 in str1. The string
+ * contents are compared case-insensitively.
+ *
+ * @return first occurrences of str2 in str1.
+ **/
+Rune* runestrstr(Rune* str1, Rune* str2);
+
+/* Single Source
+ *****************************************************************************/
+/** Convert the rune ch to lowercase. */
+Rune tolowerrune(Rune ch);
+
+/** Convert the rune ch to a title rune. */
+Rune totitlerune(Rune ch);
+
+/** Convert the rune ch to uppercase. */
+Rune toupperrune(Rune ch);
+
+/** Convert the rune ch to a base rune. */
+Rune tobaserune(Rune ch);
+
+/** Returns whether the rune is a letter. */
+bool isalpharune(Rune ch);
+
+/** Returns whether the rune is a base rune. */
+bool isbaserune(Rune ch);
+
+/** Returns whether the rune is a digit. */
+bool isdigitrune(Rune ch);
+
+/** Returns whether the rune is a lowercase rune. */
+bool islowerrune(Rune ch);
+
+/** Returns whether the rune is a whitespace rune. */
+bool isspacerune(Rune ch);
+
+/** Returns whether the rune is a title rune. */
+bool istitlerune(Rune ch);
+
+/** Returns whether the rune is a uppercase rune. */
+bool isupperrune(Rune ch);
 
 /*
  * I/O Routines
@@ -264,26 +391,6 @@ int isupperrune(Rune);
 #define Bmagic     0x314159
 #define Beof       -1
 #define Bbad       -2
-//#define Binactive  0        /* states */
-//#define Bractive,
-//#define Bwactive,
-//#define Bracteof,
-//#define Bend
-
-//enum {
-//    Bsize       = 8*1024,
-//    Bungetsize  = 4,        /* space for ungetc */
-//    Bmagic      = 0x314159,
-//    Beof        = -1,
-//    Bbad        = -2,
-//
-//    Binactive   = 0,        /* states */
-//    Bractive,
-//    Bwactive,
-//    Bracteof,
-//
-//    Bend
-//};
 
 typedef struct iobuf {
     int icount;     /* neg num of bytes at eob */
@@ -300,52 +407,6 @@ typedef struct iobuf {
     unsigned char*  gbuf;       /* pointer to good data in buf */
     unsigned char   b[Bungetsize+Bsize];
 } iobuf;
-
-/*
-#define BGETC(bp)\
-        ((bp)->icount?(bp)->bbuf[(bp)->bsize+(bp)->icount++]:Bgetc((bp)))
-
-#define BPUTC(bp,c)\
-        ((bp)->ocount?(bp)->bbuf[(bp)->bsize+(bp)->ocount++]=(c),0:Bputc((bp),(c)))
-
-#define BOFFSET(bp)\
-        (((bp)->state==Bractive)?\
-                (bp)->offset + (bp)->icount:\
-            (((bp)->state==Bwactive)?\
-                    (bp)->offset + ((bp)->bsize + (bp)->ocount):\
-                    -1))
-
-#define BLINELEN(bp)\
-        (bp)->rdline
-
-#define BFILDES(bp)\
-        (bp)->fid
-
-int Bbuffered(Biobuf*);
-Biobuf* Bfdopen(int, int);
-int Bfildes(Biobuf*);
-int Bflush(Biobuf*);
-int Bgetc(Biobuf*);
-int Bgetd(Biobuf*, double*);
-long Bgetrune(Biobuf*);
-int Binit(Biobuf*, int, int);
-int Binits(Biobuf*, int, int, unsigned char*, int);
-int Blinelen(Biobuf*);
-long long Boffset(Biobuf*);
-Biobuf* Bopen(char*, int);
-int Bprint(Biobuf*, char*, ...);
-int Bputc(Biobuf*, int);
-int Bputrune(Biobuf*, long);
-void* Brdline(Biobuf*, int);
-char* Brdstr(Biobuf*, int, int);
-long Bread(Biobuf*, void*, long);
-long long Bseek(Biobuf*, long long, int);
-int Bterm(Biobuf*);
-int Bungetc(Biobuf*);
-int Bungetrune(Biobuf*);
-long Bwrite(Biobuf*, void*, long);
-int Bvprint(Biobuf*, char*, va_list);
-*/
 
 int iobuffered(iobuf*);
 iobuf* iofdopen(int, int);
@@ -376,7 +437,7 @@ int iovprint(iobuf*, char*, va_list);
  * New Features
  */
 extern char* errstr;
-void exits(char*);
+void exits(char* str);
 
 /*
  * Make sure we use the built-in main which calls user_main
