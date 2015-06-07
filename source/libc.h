@@ -386,6 +386,7 @@ bool isupperrune(Rune ch);
  */
 #include <stdio.h>
 
+#if 0
 #define Bsize      8*1024
 #define Bungetsize 4        /* space for ungetc */
 #define Bmagic     0x314159
@@ -432,6 +433,7 @@ int ioungetc(iobuf*);
 int ioungetrune(iobuf*);
 long iowrite(iobuf*, void*, long);
 int iovprint(iobuf*, char*, va_list);
+#endif
 
 /*
  * New Features
