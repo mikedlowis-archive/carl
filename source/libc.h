@@ -187,8 +187,6 @@ void refreplace(void** var, void* val);
 
 typedef uint32_t Rune;
 
-/* Single source
- *****************************************************************************/
 /**
  * Copies one Rune from r to at most UTF_MAX bytes in s.
  *
