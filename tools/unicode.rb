@@ -81,7 +81,7 @@ def get_ranges(table)
   end
 end
 
-def generate_type_table(type)
+def generate_type_table(type, altcase = [])
   ranges = get_ranges($types[type])
   pairs  = ranges.map{|r| "0x#{r.first.to_s(16)}, 0x#{r.last.to_s(16)}" }.join(",\n    ")
   File.open("#{type.to_s}.c", "w") do |f|
@@ -92,8 +92,8 @@ def generate_type_table(type)
   end
 end
 
-generate_type_table(:uppers)
-generate_type_table(:lowers)
+generate_type_table(:uppers, :tolowers)
+generate_type_table(:lowers, :touppers)
 generate_type_table(:titles)
 generate_type_table(:other_letters)
 generate_type_table(:marks)
@@ -102,12 +102,4 @@ generate_type_table(:punctuation)
 generate_type_table(:symbols)
 generate_type_table(:spaces)
 generate_type_table(:controls)
-generate_type_table(:touppers)
-generate_type_table(:tolowers)
-
-#generate_type_table(:alphas, val)
-#generate_type_table(:combinings, val)
-#generate_type_table(:tolowers, (fields[13] == "") ? val : fields[13])
-#generate_type_table(:touppers, (fields[12] == "") ? val : fields[12])
-
 
