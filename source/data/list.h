@@ -4,6 +4,8 @@
 #ifndef LIST_H
 #define LIST_H
 
+#include <libc.h>
+
 typedef struct list_node_t {
     struct list_node_t* next;
     struct list_node_t* prev;
@@ -32,11 +34,11 @@ void list_push_back(list_t* list, list_node_t* node);
 
 list_node_t* list_pop_back(list_t* list);
 
-bool list_node_hasnext(list_node_t* node);
+bool list_node_has_next(list_node_t* node);
 
 list_node_t* list_node_next(list_node_t* node);
 
-bool list_node_hasprev(list_node_t* node);
+bool list_node_has_prev(list_node_t* node);
 
 list_node_t* list_node_prev(list_node_t* node);
 
