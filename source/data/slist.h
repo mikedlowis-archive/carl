@@ -36,4 +36,7 @@ bool slist_node_has_next(slist_node_t* node);
 
 slist_node_t* slist_node_next(slist_node_t* node);
 
+#define slist_foreach(elem, list) \
+    for(slist_node_t* elem = slist_front(list); elem != NULL; elem = elem->next)
+
 #endif /* SLIST_H */
