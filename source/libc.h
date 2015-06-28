@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <ctype.h>
 
 #ifndef nil
 #define nil NULL
