@@ -435,6 +435,18 @@ int iovprint(iobuf*, char*, va_list);
 #endif
 
 /*
+ * Threads and Atomics
+ */
+#if (__STDC_VERSION__ >= 201112L)
+    #ifndef __STDC_NO_ATOMICS__
+        #include <stdatomic.h>
+    #endif
+    #ifndef __STDC_NO_THREADS__
+        #include <threads.h>
+    #endif
+#endif
+
+/*
  * New Features
  */
 extern char* errstr;
