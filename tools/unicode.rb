@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'fileutils'
+
 $types = {}
 # Map of of all rune types to lookup table name
 $typemap = {
@@ -7,9 +9,9 @@ $typemap = {
   "Lu" => :uppers,        # Upper Case
   "Ll" => :lowers,        # Lower Case
   "Lt" => :titles,        # Title Case
-  "LC" => :other_letters, # Cased Letter
-  "Lm" => :other_letters, # Modifier Letter
-  "Lo" => :other_letters, # Other Letter
+  "LC" => :otherletters,  # Cased Letter
+  "Lm" => :otherletters,  # Modifier Letter
+  "Lo" => :otherletters,  # Other Letter
   # Combining Marks
   "Mn" => :marks,         # Non-Spacing Mark
   "Mc" => :marks,         # Spacing Mark
@@ -48,6 +50,12 @@ def register_codepoint(type, val)
   $types[type] << val
 end
 
+if ARGV.length != 2 then
+    puts "Usage: unicode.rb DATABASE OUTDIR"
+    puts "\nError: Incorrect number of arguments"
+    exit 1
+end
+
 unicode_data = File.open(ARGV[0],"r")
 unicode_data.each_line do |data|
   fields = data.split(';')
@@ -81,21 +89,31 @@ def get_ranges(table)
   end
 end
 
+def generate_typecheck_func(type, count)
+    "extern int runeinrange(const void* a, const void* b);\n" +
+    "bool is#{type.to_s.gsub(/s$/,'')}rune(Rune ch) {\n" +
+    "    return (NULL != bsearch(&ch, #{type}, #{count}, 2 * sizeof(Rune), &runeinrange));\n" +
+    "}\n"
+end
+
 def generate_type_table(type, altcase = [])
   ranges = get_ranges($types[type])
-  pairs  = ranges.map{|r| "0x#{r.first.to_s(16)}, 0x#{r.last.to_s(16)}" }.join(",\n    ")
-  File.open("#{type.to_s}.c", "w") do |f|
-    f.puts("Rune #{type.to_s}[#{ranges.length*2}] = {")
+  pairs  = ranges.map{|r| "{ 0x#{r.first.to_s(16)}, 0x#{r.last.to_s(16)} }" }.join(",\n    ")
+  File.open("#{ARGV[1]}/#{type.to_s}.c", "w") do |f|
+    f.puts("#include <libc.h>\n\n")
+    f.puts("static Rune #{type.to_s}[#{ranges.length}][2] = {")
     f.print('    ')
     f.puts(pairs)
-    f.puts("};");
+    f.print("};\n\n");
+    f.print(generate_typecheck_func(type, ranges.length))
   end
 end
 
+FileUtils.mkdir_p ARGV[1]
 generate_type_table(:uppers, :tolowers)
 generate_type_table(:lowers, :touppers)
 generate_type_table(:titles)
-generate_type_table(:other_letters)
+generate_type_table(:otherletters)
 generate_type_table(:marks)
 generate_type_table(:numbers)
 generate_type_table(:punctuation)

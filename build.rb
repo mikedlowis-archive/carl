@@ -13,6 +13,10 @@ end
 #------------------------------------------------------------------------------
 # Release Build Targets
 #------------------------------------------------------------------------------
+# Generate the rune mappings
+main_env.Command('Unicode', [],
+    "CMD" => ['./tools/unicode.rb', './tools/UnicodeData-8.0.0.txt', 'source/utf'])
+
 # Build the library
 main_env.Library('libc.a', FileList['source/**/*.c'])
 
@@ -20,7 +24,6 @@ main_env.Library('libc.a', FileList['source/**/*.c'])
 # Test Build Targets
 #------------------------------------------------------------------------------
 if Opts[:profile].include? "test"
-  # Do nothing for now
   main_env.Program('test_libc', Dir["tests/**/*.c", "modules/atf/source/*.c"] + ['./libc.a'])
   main_env.Command('Unit Tests', 'test_libc', "CMD" => './test_libc')
 end

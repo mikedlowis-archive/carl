@@ -1,19 +1,5 @@
 #include "libc.h"
 
-int runetochar(char* s, Rune* r)
-{
-    (void)s;
-    (void)r;
-    return 0;
-}
-
-int chartorune(Rune* r, char* s)
-{
-    (void)r;
-    (void)s;
-    return 0;
-}
-
 int runelen(long r)
 {
     if(r <= 0x7F)
@@ -32,18 +18,5 @@ int runelen(long r)
         return 4;
     else
         return 0; /* rune too large */
-}
-
-int runenlen(Rune* r, int num)
-{
-    size_t i, n = 0;
-    for(i = 0; i < num; i++)
-        n += runelen(r[i]);
-    return n;
-}
-
-bool fullrune(char* s, int n)
-{
-    return false;
 }
 

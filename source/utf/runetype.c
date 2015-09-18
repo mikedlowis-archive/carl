@@ -24,10 +24,12 @@ Rune tobaserune(Rune ch)
     return 0;
 }
 
+
+
+
 bool isalpharune(Rune ch)
 {
-    (void)ch;
-    return false;
+    return (isupperrune(ch) || islowerrune(ch));
 }
 
 bool isbaserune(Rune ch)
@@ -37,30 +39,6 @@ bool isbaserune(Rune ch)
 }
 
 bool isdigitrune(Rune ch)
-{
-    (void)ch;
-    return false;
-}
-
-bool islowerrune(Rune ch)
-{
-    (void)ch;
-    return false;
-}
-
-bool isspacerune(Rune ch)
-{
-    (void)ch;
-    return false;
-}
-
-bool istitlerune(Rune ch)
-{
-    (void)ch;
-    return false;
-}
-
-bool isupperrune(Rune ch)
 {
     (void)ch;
     return false;
