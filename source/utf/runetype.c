@@ -24,21 +24,7 @@ Rune tobaserune(Rune ch)
     return 0;
 }
 
-
-
-
-bool isalpharune(Rune ch)
-{
-    return (isupperrune(ch) || islowerrune(ch));
-}
-
 bool isbaserune(Rune ch)
-{
-    (void)ch;
-    return false;
-}
-
-bool isdigitrune(Rune ch)
 {
     (void)ch;
     return false;
