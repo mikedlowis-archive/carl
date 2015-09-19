@@ -218,6 +218,7 @@ static Rune symbols[214][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool issymbolrune(Rune ch) {
     return (NULL != bsearch(&ch, symbols, 214, 2 * sizeof(Rune), &runeinrange));
 }

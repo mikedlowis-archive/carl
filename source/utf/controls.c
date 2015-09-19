@@ -8,6 +8,7 @@ static Rune controls[4][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool iscontrolrune(Rune ch) {
     return (NULL != bsearch(&ch, controls, 4, 2 * sizeof(Rune), &runeinrange));
 }

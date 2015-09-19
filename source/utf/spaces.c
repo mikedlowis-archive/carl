@@ -14,6 +14,7 @@ static Rune spaces[10][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool isspacerune(Rune ch) {
     return (NULL != bsearch(&ch, spaces, 10, 2 * sizeof(Rune), &runeinrange));
 }

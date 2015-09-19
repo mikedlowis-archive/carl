@@ -14,6 +14,7 @@ static Rune titles[10][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool istitlerune(Rune ch) {
     return (NULL != bsearch(&ch, titles, 10, 2 * sizeof(Rune), &runeinrange));
 }

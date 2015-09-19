@@ -634,6 +634,7 @@ static Rune lowers[630][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool islowerrune(Rune ch) {
     return (NULL != bsearch(&ch, lowers, 630, 2 * sizeof(Rune), &runeinrange));
 }

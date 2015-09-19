@@ -474,6 +474,7 @@ static Rune otherletters[470][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool isotherletterrune(Rune ch) {
     return (NULL != bsearch(&ch, otherletters, 470, 2 * sizeof(Rune), &runeinrange));
 }

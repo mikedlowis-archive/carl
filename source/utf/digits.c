@@ -55,6 +55,7 @@ static Rune digits[51][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool isdigitrune(Rune ch) {
     return (NULL != bsearch(&ch, digits, 51, 2 * sizeof(Rune), &runeinrange));
 }

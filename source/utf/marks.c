@@ -240,6 +240,7 @@ static Rune marks[236][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool ismarkrune(Rune ch) {
     return (NULL != bsearch(&ch, marks, 236, 2 * sizeof(Rune), &runeinrange));
 }

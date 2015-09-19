@@ -629,6 +629,7 @@ static Rune uppers[625][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool isupperrune(Rune ch) {
     return (NULL != bsearch(&ch, uppers, 625, 2 * sizeof(Rune), &runeinrange));
 }

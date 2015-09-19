@@ -18,15 +18,3 @@ Rune toupperrune(Rune ch)
     return 0;
 }
 
-Rune tobaserune(Rune ch)
-{
-    (void)ch;
-    return 0;
-}
-
-bool isbaserune(Rune ch)
-{
-    (void)ch;
-    return false;
-}
-

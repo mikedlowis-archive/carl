@@ -30,6 +30,7 @@ static Rune other[26][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool isotherrune(Rune ch) {
     return (NULL != bsearch(&ch, other, 26, 2 * sizeof(Rune), &runeinrange));
 }

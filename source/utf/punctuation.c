@@ -165,6 +165,7 @@ static Rune punctuation[161][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool ispunctuationrune(Rune ch) {
     return (NULL != bsearch(&ch, punctuation, 161, 2 * sizeof(Rune), &runeinrange));
 }

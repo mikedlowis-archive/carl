@@ -565,6 +565,7 @@ static Rune alphas[561][2] = {
 };
 
 extern int runeinrange(const void* a, const void* b);
+
 bool isalpharune(Rune ch) {
     return (NULL != bsearch(&ch, alphas, 561, 2 * sizeof(Rune), &runeinrange));
 }
