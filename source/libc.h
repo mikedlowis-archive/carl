@@ -447,17 +447,11 @@ int iovprint(iobuf*, char*, va_list);
 #endif
 
 /*
- * New Features
- */
-extern char* errstr;
-void exits(char* str);
-
-/*
  * Make sure we use the built-in main which calls user_main
  */
 #ifndef NO_MAIN_WRAPPER
     #define main user_main
 #endif
-void user_main(int, char**);
+int user_main(int, char**);
 
 #endif /* LIBC_H */

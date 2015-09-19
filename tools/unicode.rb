@@ -93,7 +93,7 @@ def get_ranges(table)
 end
 
 def generate_typecheck_func(type, count)
-    "extern int runeinrange(const void* a, const void* b);\n" +
+    "extern int runeinrange(const void* a, const void* b);\n\n" +
     "bool is#{type.to_s.gsub(/s$/,'')}rune(Rune ch) {\n" +
     "    return (NULL != bsearch(&ch, #{type}, #{count}, 2 * sizeof(Rune), &runeinrange));\n" +
     "}\n"
