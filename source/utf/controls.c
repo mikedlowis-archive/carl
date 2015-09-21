@@ -1,6 +1,6 @@
 #include <libc.h>
 
-static Rune controls[4][2] = {
+static Rune ranges[4][2] = {
     { 0x0, 0x8 },
     { 0xe, 0x1b },
     { 0x7f, 0x84 },
@@ -10,5 +10,5 @@ static Rune controls[4][2] = {
 extern int runeinrange(const void* a, const void* b);
 
 bool iscontrolrune(Rune ch) {
-    return (NULL != bsearch(&ch, controls, 4, 2 * sizeof(Rune), &runeinrange));
+    return (NULL != bsearch(&ch, ranges, 4, 2 * sizeof(Rune), &runeinrange));
 }

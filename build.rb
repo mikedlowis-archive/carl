@@ -13,10 +13,6 @@ end
 #------------------------------------------------------------------------------
 # Release Build Targets
 #------------------------------------------------------------------------------
-# Generate the rune mappings
-main_env.Command('Unicode', [],
-    "CMD" => ['./tools/unicode.rb', './tools/UnicodeData-8.0.0.txt', 'source/utf'])
-
 # Build the library
 main_env.Library('libc.a', FileList['source/**/*.c'])
 

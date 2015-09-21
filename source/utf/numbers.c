@@ -1,9 +1,17 @@
 #include <libc.h>
 
-static Rune numbers[111][2] = {
+static Rune singles[6] = {
+    0xb9,
+    0x2070,
+    0x2cfd,
+    0x3007,
+    0x10341,
+    0x1034a
+};
+
+static Rune ranges[105][2] = {
     { 0x30, 0x39 },
     { 0xb2, 0xb3 },
-    { 0xb9, 0xb9 },
     { 0xbc, 0xbe },
     { 0x660, 0x669 },
     { 0x6f0, 0x6f9 },
@@ -39,7 +47,6 @@ static Rune numbers[111][2] = {
     { 0x1bb0, 0x1bb9 },
     { 0x1c40, 0x1c49 },
     { 0x1c50, 0x1c59 },
-    { 0x2070, 0x2070 },
     { 0x2074, 0x2079 },
     { 0x2080, 0x2089 },
     { 0x2150, 0x2182 },
@@ -47,8 +54,6 @@ static Rune numbers[111][2] = {
     { 0x2460, 0x249b },
     { 0x24ea, 0x24ff },
     { 0x2776, 0x2793 },
-    { 0x2cfd, 0x2cfd },
-    { 0x3007, 0x3007 },
     { 0x3021, 0x3029 },
     { 0x3038, 0x303a },
     { 0x3192, 0x3195 },
@@ -72,8 +77,6 @@ static Rune numbers[111][2] = {
     { 0x1018a, 0x1018b },
     { 0x102e1, 0x102fb },
     { 0x10320, 0x10323 },
-    { 0x10341, 0x10341 },
-    { 0x1034a, 0x1034a },
     { 0x103d1, 0x103d5 },
     { 0x104a0, 0x104a9 },
     { 0x10858, 0x1085f },
@@ -117,5 +120,6 @@ static Rune numbers[111][2] = {
 extern int runeinrange(const void* a, const void* b);
 
 bool isnumberrune(Rune ch) {
-    return (NULL != bsearch(&ch, numbers, 111, 2 * sizeof(Rune), &runeinrange));
+    return ((NULL != bsearch(&ch, singles, 6, sizeof(Rune), &runeinrange)) || 
+            (NULL != bsearch(&ch, ranges, 105, 2 * sizeof(Rune), &runeinrange)));
 }

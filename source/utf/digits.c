@@ -1,6 +1,6 @@
 #include <libc.h>
 
-static Rune digits[51][2] = {
+static Rune ranges[51][2] = {
     { 0x30, 0x39 },
     { 0x660, 0x669 },
     { 0x6f0, 0x6f9 },
@@ -57,5 +57,5 @@ static Rune digits[51][2] = {
 extern int runeinrange(const void* a, const void* b);
 
 bool isdigitrune(Rune ch) {
-    return (NULL != bsearch(&ch, digits, 51, 2 * sizeof(Rune), &runeinrange));
+    return (NULL != bsearch(&ch, ranges, 51, 2 * sizeof(Rune), &runeinrange));
 }
