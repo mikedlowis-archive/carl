@@ -1,4 +1,4 @@
-#include "libc.h"
+#include <carl.h>
 
 /* Used by rune type checking functions to find the rune in the type tables */
 int runeinrange(const void* a, const void* b) {

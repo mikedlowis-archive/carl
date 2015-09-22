@@ -1,8 +1,8 @@
 /**
-  @file libc.h
+  @file carl.h
 */
-#ifndef LIBC_H
-#define LIBC_H
+#ifndef CARL_H
+#define CARL_H
 
 /*
  * Base Types and Definitions
@@ -423,4 +423,4 @@ Rune totitlerune(Rune ch);
 #endif
 int user_main(int, char**);
 
-#endif /* LIBC_H */
+#endif /* CARL_H */

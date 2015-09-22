@@ -4,7 +4,7 @@
 #ifndef SLIST_H
 #define SLIST_H
 
-#include <libc.h>
+#include <carl.h>
 
 typedef struct slist_node_t {
     struct slist_node_t* next;

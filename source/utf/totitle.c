@@ -1,4 +1,4 @@
-#include <libc.h>
+#include <carl.h>
 
 static Rune mappings[1245][2] = {
     { 0x61, 0x41 },

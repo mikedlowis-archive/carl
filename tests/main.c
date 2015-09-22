@@ -1,5 +1,5 @@
 #include "atf.h"
-#include "libc.h"
+#include <carl.h>
 
 int main(int argc, char** argv)
 {

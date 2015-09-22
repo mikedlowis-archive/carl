@@ -112,7 +112,7 @@ def generate_type_tables(type)
   ranges, singles = $types[type].partition {|e| e.kind_of? Array }
   puts "Generating #{ARGV[1]}/#{type.to_s}.c"
   File.open("#{ARGV[1]}/#{type.to_s}.c", "w") do |f|
-    f.puts("#include <libc.h>\n\n")
+    f.puts("#include <carl.h>\n\n")
     table = singles.map{|e| "0x#{e.value.to_s(16)}" }.join(",\n    ")
     f.print("static Rune singles[#{singles.length}] = {\n    #{table}\n};\n\n") if singles.length > 0
     table = ranges.map{|r| "{ 0x#{r.first.value.to_s(16)}, 0x#{r.last.value.to_s(16)} }" }.join(",\n    ")
@@ -135,7 +135,7 @@ def generate_to_table(type)
   mappings = $types[:all].select{|e| e[type] > 0 }
   puts "Generating #{ARGV[1]}/#{type.to_s}.c"
   File.open("#{ARGV[1]}/#{type.to_s}.c", "w") do |f|
-    f.print "#include <libc.h>\n\n"
+    f.print "#include <carl.h>\n\n"
     f.print "static Rune mappings[#{mappings.length}][2] = {\n"
     mappings.each do |e|
       f.print "    { 0x#{e.value.to_s(16)}, 0x#{e[type].to_s(16)} },\n"
