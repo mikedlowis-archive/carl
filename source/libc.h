@@ -29,17 +29,19 @@
     (type*)((uintptr_t)obj - offsetof(type, member))
 #endif
 
+#define concat(a,b)  a##b
+
+#define ident(a) concat(id, a)
+
+#define unique_id ident(__LINE__)
+
 /*
  * Assertions
  */
 #include <assert.h>
 
 #ifndef static_assert
-    #ifdef NDEBUG
-        #define static_assert(expr) ((void)0)
-    #else
-        #define static_assert(expr) switch(0){case 0:case (expr):;}
-    #endif
+    #define static_assert(expr) typedef char unique_id[( expr )?1:-1]
 #endif
 
 /*
@@ -179,13 +181,14 @@ void refreplace(void** var, void* val);
 /*
  * Rune Definitions and Routines
  */
-#define UTF_MAX   4        /*< Maximum number of bytes per rune */
-#define Runesync  0x80     /*< Upper bound of a UTF sequence */
-#define Runeself  0x80     /*< Upper bound of a rune sequence */
-#define Runeerror 0xFFFD   /*< Decoding error */
-#define Runemax   0x10FFFF /*< Maximum rune value */
-#define Runemask  0x1FFFFF /*< All bits used by a rune */
+#define UTF_MAX   6        /* Maximum number of bytes per rune */
+#define Runesync  0x80     /* Upper bound of a UTF sequence */
+#define Runeself  0x80     /* Upper bound of a rune sequence */
+#define Runeerror 0xFFFD   /* Decoding error */
+#define Runemax   0x10FFFF /* Maximum rune value */
+#define Runemask  0x1FFFFF /* All bits used by a rune */
 
+/* Type representing unicode character types */
 typedef uint32_t Rune;
 
 /**
@@ -347,32 +350,38 @@ Rune* runestrstr(Rune* str1, Rune* str2);
 
 /* Single Source
  *****************************************************************************/
-/** Convert the rune ch to lowercase. */
-Rune tolowerrune(Rune ch);
-
-/** Convert the rune ch to a title rune. */
-Rune totitlerune(Rune ch);
-
-/** Convert the rune ch to uppercase. */
-Rune toupperrune(Rune ch);
-
-/** Convert the rune ch to a base rune. */
-Rune tobaserune(Rune ch);
-
-/** Returns whether the rune is a letter. */
+/** Returns whether the rune is a letter rune. */
 bool isalpharune(Rune ch);
 
-/** Returns whether the rune is a base rune. */
-bool isbaserune(Rune ch);
+/** Returns whether the rune is a control rune. */
+bool iscontrolrune(Rune ch);
 
-/** Returns whether the rune is a digit. */
+/** Returns whether the rune is a digit rune. */
 bool isdigitrune(Rune ch);
 
 /** Returns whether the rune is a lowercase rune. */
 bool islowerrune(Rune ch);
 
+/** Returns whether the rune is a mark rune. */
+bool ismarkrune(Rune ch);
+
+/** Returns whether the rune is a number rune. */
+bool isnumberrune(Rune ch);
+
+/** Returns whether the rune is a other rune. */
+bool isotherrune(Rune ch);
+
+/** Returns whether the rune is a other letter rune. */
+bool isotherletterrune(Rune ch);
+
+/** Returns whether the rune is a punctuation rune. */
+bool ispunctuationrune(Rune ch);
+
 /** Returns whether the rune is a whitespace rune. */
 bool isspacerune(Rune ch);
+
+/** Returns whether the rune is a symbol rune. */
+bool issymbolrune(Rune ch);
 
 /** Returns whether the rune is a title rune. */
 bool istitlerune(Rune ch);
@@ -380,59 +389,19 @@ bool istitlerune(Rune ch);
 /** Returns whether the rune is a uppercase rune. */
 bool isupperrune(Rune ch);
 
+/** Convert the rune ch to lowercase. */
+Rune tolowerrune(Rune ch);
+
+/** Convert the rune ch to uppercase. */
+Rune toupperrune(Rune ch);
+
+/** Convert the rune ch to a title rune. */
+Rune totitlerune(Rune ch);
+
 /*
  * I/O Routines
  */
 #include <stdio.h>
-
-#if 0
-#define Bsize      8*1024
-#define Bungetsize 4        /* space for ungetc */
-#define Bmagic     0x314159
-#define Beof       -1
-#define Bbad       -2
-
-typedef struct iobuf {
-    int icount;     /* neg num of bytes at eob */
-    int ocount;     /* num of bytes at bob */
-    int rdline;     /* num of bytes after rdline */
-    int runesize;   /* num of bytes of last getrune */
-    int state;      /* r/w/inactive */
-    int fid;        /* open file */
-    int flag;       /* magic if malloc'ed */
-    long long   offset;     /* offset of buffer in file */
-    int bsize;      /* size of buffer */
-    unsigned char*  bbuf;       /* pointer to beginning of buffer */
-    unsigned char*  ebuf;       /* pointer to end of buffer */
-    unsigned char*  gbuf;       /* pointer to good data in buf */
-    unsigned char   b[Bungetsize+Bsize];
-} iobuf;
-
-int iobuffered(iobuf*);
-iobuf* iofdopen(int, int);
-int iofildes(iobuf*);
-int ioflush(iobuf*);
-int iogetc(iobuf*);
-int iogetd(iobuf*, double*);
-long iogetrune(iobuf*);
-int ioinit(iobuf*, int, int);
-int ioinits(iobuf*, int, int, unsigned char*, int);
-int iolinelen(iobuf*);
-long long iooffset(iobuf*);
-iobuf* ioopen(char*, int);
-int ioprint(iobuf*, char*, ...);
-int ioputc(iobuf*, int);
-int ioputrune(iobuf*, long);
-void* iordline(iobuf*, int);
-char* iordstr(iobuf*, int, int);
-long ioread(iobuf*, void*, long);
-long long seek(iobuf*, long long, int);
-int ioterm(iobuf*);
-int ioungetc(iobuf*);
-int ioungetrune(iobuf*);
-long iowrite(iobuf*, void*, long);
-int iovprint(iobuf*, char*, va_list);
-#endif
 
 /*
  * Threads and Atomics

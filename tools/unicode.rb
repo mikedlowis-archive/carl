@@ -163,9 +163,6 @@ unicode_data.each_line do |data|
   else
     register_codepoint(types, char)
   end
-  #register_codepoint([:tolower], char) if char.to_lower != 0
-  #register_codepoint([:toupper], char) if char.to_upper != 0
-  #register_codepoint([:totitle], char) if char.to_title != 0
 end
 unicode_data.close()
 

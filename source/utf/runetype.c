@@ -1,20 +1,32 @@
 #include "libc.h"
 
-Rune tolowerrune(Rune ch)
+bool isalnumrune(Rune ch)
 {
-    (void)ch;
-    return 0;
+    return false;
 }
 
-Rune totitlerune(Rune ch)
+bool isblankrune(Rune ch)
 {
-    (void)ch;
-    return 0;
+    return false;
 }
 
-Rune toupperrune(Rune ch)
+bool isgraphrune(Rune ch)
 {
-    (void)ch;
-    return 0;
+    return false;
+}
+
+bool isprintrune(Rune ch)
+{
+    return false;
+}
+
+bool isxdigitrune(Rune ch)
+{
+    return false;
+}
+
+bool iscombiningrune(Rune ch)
+{
+    return false;
 }
 
