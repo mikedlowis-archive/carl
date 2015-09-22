@@ -631,9 +631,11 @@ static Rune ranges[86][2] = {
     { 0x1d790, 0x1d7a8 }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool isupperrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 539, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 539, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 86, 2 * sizeof(Rune), &runeinrange)));
 }

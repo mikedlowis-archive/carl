@@ -16,9 +16,11 @@ static Rune ranges[3][2] = {
     { 0x1fa8, 0x1faf }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool istitlerune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 7, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 7, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 3, 2 * sizeof(Rune), &runeinrange)));
 }

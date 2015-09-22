@@ -6,7 +6,7 @@ require './modules/build-system/setup'
 #------------------------------------------------------------------------------
 # Define the default compiler environment
 main_env = BuildEnv.new do |env|
-  env["CFLAGS"]  += ['-O3', '-Wall', '-Wextra', '--std=c99', '--pedantic']
+  env["CFLAGS"]  += ['-g', '-O3', '-Wall', '-Wextra', '--std=c99', '--pedantic']
   env["CPPPATH"] += Dir['source/', 'modules/atf/source']
 end
 
@@ -21,6 +21,6 @@ main_env.Library('libc.a', FileList['source/**/*.c'])
 #------------------------------------------------------------------------------
 if Opts[:profile].include? "test"
   main_env.Program('test_libc', Dir["tests/**/*.c", "modules/atf/source/*.c"] + ['./libc.a'])
-  main_env.Command('Unit Tests', 'test_libc', "CMD" => './test_libc')
+  main_env.Command('Unit Tests', 'test_libc', "CMD" => ['./test_libc'])
 end
 

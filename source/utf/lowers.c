@@ -636,9 +636,11 @@ static Rune ranges[98][2] = {
     { 0x1d7c4, 0x1d7c9 }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool islowerrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 532, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 532, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 98, 2 * sizeof(Rune), &runeinrange)));
 }

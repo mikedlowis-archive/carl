@@ -32,9 +32,11 @@ static Rune ranges[12][2] = {
     { 0xe0020, 0xe007f }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool isotherrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 14, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 14, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 12, 2 * sizeof(Rune), &runeinrange)));
 }

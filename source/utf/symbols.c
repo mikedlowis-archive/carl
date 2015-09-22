@@ -220,9 +220,11 @@ static Rune ranges[144][2] = {
     { 0x1f980, 0x1f984 }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool issymbolrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 70, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 70, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 144, 2 * sizeof(Rune), &runeinrange)));
 }

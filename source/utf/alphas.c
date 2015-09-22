@@ -567,9 +567,11 @@ static Rune ranges[433][2] = {
     { 0x2f800, 0x2fa1d }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool isalpharune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 128, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 128, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 433, 2 * sizeof(Rune), &runeinrange)));
 }

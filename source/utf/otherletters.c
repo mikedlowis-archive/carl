@@ -476,9 +476,11 @@ static Rune ranges[354][2] = {
     { 0x2f800, 0x2fa1d }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool isotherletterrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 116, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 116, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 354, 2 * sizeof(Rune), &runeinrange)));
 }

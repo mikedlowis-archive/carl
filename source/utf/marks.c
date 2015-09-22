@@ -242,9 +242,11 @@ static Rune ranges[191][2] = {
     { 0xe0100, 0xe01ef }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool ismarkrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 45, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 45, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 191, 2 * sizeof(Rune), &runeinrange)));
 }

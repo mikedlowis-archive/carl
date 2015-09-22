@@ -54,6 +54,8 @@ static Rune ranges[51][2] = {
     { 0x1d7ce, 0x1d7ff }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool isdigitrune(Rune ch) {

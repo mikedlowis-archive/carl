@@ -3,12 +3,9 @@
 require 'fileutils'
 require 'stringio'
 
-# Check if we have the right number of arguments, bail otherwise
-if ARGV.length != 2 then
-    puts "Usage: unicode.rb DATABASE OUTDIR"
-    puts "\nError: Incorrect number of arguments"
-    exit 1
-end
+Database  = "./tools/UnicodeData-8.0.0.txt"
+OutputDir = "./source/utf"
+TestFile  = "./tests/utf/test_unicodedata.c"
 
 # Struct definition for representing a unicode character
 UnicodeChar = Struct.new(
@@ -74,6 +71,9 @@ $typemap = {
   "Cn" => [:other]                 # Unassigned
 }
 
+# List of generated test cases for each codepoint
+$tests = {}
+
 #------------------------------------------------------------------------------
 
 # Register a character in the designated type tables combining adjacent
@@ -89,18 +89,24 @@ def register_codepoint(types, val)
     else
         $types[type] << val
     end
+    $tests[val.value] = []
+    $tests[val.value] << "is#{type.to_s.gsub(/s$/,'')}rune(#{val.value})"
+    $tests[val.value] << "#{val.tolower} == tolowerrune(#{val.value})" if val.tolower > 0
+    $tests[val.value] << "#{val.toupper} == toupperrune(#{val.value})" if val.toupper > 0
+    $tests[val.value] << "#{val.totitle} == totitlerune(#{val.value})" if val.totitle > 0
   end
 end
 
 # Generate a rune type checking function using the singles and ranges tables
 def generate_typecheck_func(type, numranges, numsingles)
     out = StringIO.new
+    out.print "extern int runecmp(const void* a, const void* b);\n\n"
     out.print "extern int runeinrange(const void* a, const void* b);\n\n"
     out.print "bool is#{type.to_s.gsub(/s$/,'')}rune(Rune ch) {\n"
     if numsingles == 0
         out.print "    return (NULL != bsearch(&ch, ranges, #{numranges}, 2 * sizeof(Rune), &runeinrange));\n"
     else
-        out.print "    return ((NULL != bsearch(&ch, singles, #{numsingles}, sizeof(Rune), &runeinrange)) || \n"
+        out.print "    return ((NULL != bsearch(&ch, singles, #{numsingles}, sizeof(Rune), &runecmp)) || \n"
         out.print "            (NULL != bsearch(&ch, ranges, #{numranges}, 2 * sizeof(Rune), &runeinrange)));\n"
     end
     out.print "}\n"
@@ -110,8 +116,8 @@ end
 # Generates rune type tables organized by singles and ranges
 def generate_type_tables(type)
   ranges, singles = $types[type].partition {|e| e.kind_of? Array }
-  puts "Generating #{ARGV[1]}/#{type.to_s}.c"
-  File.open("#{ARGV[1]}/#{type.to_s}.c", "w") do |f|
+  puts "Generating #{OutputDir}/#{type.to_s}.c"
+  File.open("#{OutputDir}/#{type.to_s}.c", "w") do |f|
     f.puts("#include <carl.h>\n\n")
     table = singles.map{|e| "0x#{e.value.to_s(16)}" }.join(",\n    ")
     f.print("static Rune singles[#{singles.length}] = {\n    #{table}\n};\n\n") if singles.length > 0
@@ -123,9 +129,9 @@ end
 
 def generate_to_func(type, tblsz)
     out = StringIO.new
-    out.print "extern int runeinrange(const void* a, const void* b);\n\n"
+    out.print "extern int runecmp(const void* a, const void* b);\n\n"
     out.print "Rune #{type}rune(Rune ch) {\n"
-    out.print "    Rune* to = bsearch(&ch, mappings, #{tblsz}, 2 * sizeof(Rune), &runeinrange);\n"
+    out.print "    Rune* to = bsearch(&ch, mappings, #{tblsz}, 2 * sizeof(Rune), &runecmp);\n"
     out.print "    return (to == NULL) ? ch : to[1];\n"
     out.print "}\n"
     out.string
@@ -133,8 +139,8 @@ end
 
 def generate_to_table(type)
   mappings = $types[:all].select{|e| e[type] > 0 }
-  puts "Generating #{ARGV[1]}/#{type.to_s}.c"
-  File.open("#{ARGV[1]}/#{type.to_s}.c", "w") do |f|
+  puts "Generating #{OutputDir}/#{type.to_s}.c"
+  File.open("#{OutputDir}/#{type.to_s}.c", "w") do |f|
     f.print "#include <carl.h>\n\n"
     f.print "static Rune mappings[#{mappings.length}][2] = {\n"
     mappings.each do |e|
@@ -145,10 +151,27 @@ def generate_to_table(type)
   end
 end
 
+def generate_test_file()
+    puts "Generating #{TestFile}"
+    File.open(TestFile, "w") do |f|
+        f.print("#include <atf.h>\n")
+        f.print("#include <carl.h>\n")
+        f.print("\nTEST_SUITE(UnicodeData) {\n")
+        $tests.each_pair do |codept,tests|
+            if codept < 250000
+                f.print("    TEST(Codepoint_#{codept.to_s(16)}) {\n")
+                tests.each {|t| f.print "        CHECK(#{t});\n" }
+                f.print("    }\n")
+            end
+        end
+        f.print("}\n")
+    end
+end
+
 #------------------------------------------------------------------------------
 
 # Read in the unicode character database and sort it into type classes
-unicode_data = File.open(ARGV[0],"r")
+unicode_data = File.open(Database,"r")
 unicode_data.each_line do |data|
   char = UnicodeChar.new(*data.split(';'))
   char.value    = char.value.to_i(16)
@@ -160,18 +183,18 @@ unicode_data.each_line do |data|
   $types[:all] << char
   if (bicat == "WS") || (bicat == "S") || (bicat == "B")
     register_codepoint([:spaces], char)
-  else
-    register_codepoint(types, char)
   end
+  register_codepoint(types, char)
 end
 unicode_data.close()
 
 # Generate the runetype files into the designated directory
-FileUtils.mkdir_p ARGV[1]
+FileUtils.mkdir_p OutputDir
 $typemap.values.flatten.uniq.each do |type|
     generate_type_tables(type)
 end
 generate_to_table(:tolower)
 generate_to_table(:toupper)
 generate_to_table(:totitle)
+#generate_test_file()
 

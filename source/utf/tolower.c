@@ -1236,9 +1236,9 @@ static Rune mappings[1233][2] = {
     { 0x118bf, 0x118df },
 };
 
-extern int runeinrange(const void* a, const void* b);
+extern int runecmp(const void* a, const void* b);
 
 Rune tolowerrune(Rune ch) {
-    Rune* to = bsearch(&ch, mappings, 1233, 2 * sizeof(Rune), &runeinrange);
+    Rune* to = bsearch(&ch, mappings, 1233, 2 * sizeof(Rune), &runecmp);
     return (to == NULL) ? ch : to[1];
 }

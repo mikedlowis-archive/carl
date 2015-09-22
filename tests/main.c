@@ -8,5 +8,6 @@ int main(int argc, char** argv)
     RUN_EXTERN_TEST_SUITE(RefCount);
     RUN_EXTERN_TEST_SUITE(SList);
     RUN_EXTERN_TEST_SUITE(BSTree);
+    RUN_EXTERN_TEST_SUITE(UnicodeData);
     return (PRINT_TEST_RESULTS());
 }

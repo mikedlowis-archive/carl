@@ -117,9 +117,11 @@ static Rune ranges[105][2] = {
     { 0x1f100, 0x1f10c }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool isnumberrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 6, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 6, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 105, 2 * sizeof(Rune), &runeinrange)));
 }

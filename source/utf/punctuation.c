@@ -167,9 +167,11 @@ static Rune ranges[106][2] = {
     { 0x1da87, 0x1da8b }
 };
 
+extern int runecmp(const void* a, const void* b);
+
 extern int runeinrange(const void* a, const void* b);
 
 bool ispunctuationrune(Rune ch) {
-    return ((NULL != bsearch(&ch, singles, 55, sizeof(Rune), &runeinrange)) || 
+    return ((NULL != bsearch(&ch, singles, 55, sizeof(Rune), &runecmp)) || 
             (NULL != bsearch(&ch, ranges, 106, 2 * sizeof(Rune), &runeinrange)));
 }
