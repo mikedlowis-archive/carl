@@ -4,8 +4,7 @@ require 'fileutils'
 require 'stringio'
 
 Database  = "./tools/UnicodeData-8.0.0.txt"
-OutputDir = "./source/utf"
-TestFile  = "./tests/utf/test_unicodedata.c"
+OutputDir = "./source/utf/runetype"
 
 # Struct definition for representing a unicode character
 UnicodeChar = Struct.new(
@@ -151,23 +150,6 @@ def generate_to_table(type)
   end
 end
 
-def generate_test_file()
-    puts "Generating #{TestFile}"
-    File.open(TestFile, "w") do |f|
-        f.print("#include <atf.h>\n")
-        f.print("#include <carl.h>\n")
-        f.print("\nTEST_SUITE(UnicodeData) {\n")
-        $tests.each_pair do |codept,tests|
-            if codept < 250000
-                f.print("    TEST(Codepoint_#{codept.to_s(16)}) {\n")
-                tests.each {|t| f.print "        CHECK(#{t});\n" }
-                f.print("    }\n")
-            end
-        end
-        f.print("}\n")
-    end
-end
-
 #------------------------------------------------------------------------------
 
 # Read in the unicode character database and sort it into type classes
@@ -196,5 +178,4 @@ end
 generate_to_table(:tolower)
 generate_to_table(:toupper)
 generate_to_table(:totitle)
-#generate_test_file()
 
