@@ -1,5 +1,7 @@
 #include <data/bstree.h>
 
+
+
 void bstree_init(bstree_t* tree, bstree_cmpfn_t cmpfn, bool allow_dups)
 {
     tree->root = NULL;

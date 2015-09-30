@@ -2,6 +2,8 @@
   @file vec.c
 */
 #include <data/vec.h>
+#include <stdlib.h>
+#include <string.h>
 
 #ifndef DEFAULT_VEC_CAPACITY
 #define DEFAULT_VEC_CAPACITY (size_t)8

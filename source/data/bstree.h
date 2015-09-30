@@ -4,7 +4,8 @@
 #ifndef BSTREE_H
 #define BSTREE_H
 
-#include <carl.h>
+#include <stddef.h>
+#include <stdbool.h>
 
 typedef struct bstree_node_t {
     struct bstree_node_t* left;

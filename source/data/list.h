@@ -4,7 +4,8 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <carl.h>
+#include <stddef.h>
+#include <stdbool.h>
 
 typedef struct list_node_t {
     struct list_node_t* next;

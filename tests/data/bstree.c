@@ -4,6 +4,7 @@
 
 // File To Test
 #include <data/bstree.h>
+#include <carl.h>
 
 typedef struct {
     bstree_node_t node;

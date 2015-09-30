@@ -4,7 +4,9 @@
 #ifndef VEC_H
 #define VEC_H
 
-#include <carl.h>
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
     size_t   elem_count;

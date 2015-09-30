@@ -33,3 +33,6 @@
 .rsconscache
 test_libc
 test_libc.exe
+*.d
+.ninja_deps
+.ninja_log
