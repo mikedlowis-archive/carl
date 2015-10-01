@@ -34,8 +34,9 @@ static void find_entry(hash_t* hash, hash_entry_t** parent, hash_entry_t** curre
 static void rehash(hash_t* hash)
 {
     unsigned int oldcount = hash->bkt_count++;
-    hash_entry_t** oldbuckets = (hash_entry_t**)calloc(sizeof(hash_entry_t*), num_buckets(hash->bkt_count));
+    hash_entry_t** oldbuckets = hash->buckets;
     hash->buckets = (hash_entry_t**)calloc(sizeof(hash_entry_t*), num_buckets(hash->bkt_count));
+    hash->size = 0;
     /* Iterate over all of the old buckets */
     for (unsigned int i = 0; i < num_buckets(oldcount); i++) {
         hash_entry_t* node = oldbuckets[i];
@@ -66,28 +67,40 @@ void hash_deinit(hash_t* hash)
     free(hash->buckets);
 }
 
+size_t hash_size(hash_t* hash)
+{
+    return hash->size;
+}
+
 bool hash_set(hash_t* hash, hash_entry_t* entry)
 {
     if (hash->size >= num_buckets(hash->bkt_count))
         rehash(hash);
     entry->hash = hash->hashfn(entry);
-    unsigned int index   = (entry->hash % num_buckets(hash->bkt_count));
-    hash_entry_t* parent = NULL;
-    hash_entry_t* node   = hash->buckets[index];
+    unsigned int index    = (entry->hash % num_buckets(hash->bkt_count));
+    hash_entry_t* parent  = NULL;
+    hash_entry_t* node    = hash->buckets[index];
+    hash_entry_t* deadite = NULL;
     find_entry(hash, &parent, &node, entry);
-    if (node != NULL) {
-        hash_entry_t* deadite = node;
-        node = node->next;
-        entry->next  = node;
-        if (parent != NULL)
-            parent->next = entry;
-        else
-            hash->buckets[index] = entry;
-        hash->delfn(deadite);
-    } else {
+    if ((parent == NULL) && (node == NULL)) {
         hash->buckets[index] = entry;
         entry->next = NULL;
+        hash->size++;
+    } else if (node == NULL) {
+        parent->next = entry;
+        entry->next = NULL;
+        hash->size++;
+    } else if (parent == NULL) {
+        deadite = node;
+        entry->next = deadite->next;
+        hash->buckets[index] = entry;
+    } else {
+        deadite = node;
+        entry->next = deadite->next;
+        parent->next = entry;
     }
+    if (deadite != NULL)
+        hash->delfn(deadite);
     return true;
 }
 

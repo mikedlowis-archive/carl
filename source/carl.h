@@ -16,6 +16,8 @@
 #include <errno.h>
 #include <ctype.h>
 
+typedef unsigned int uint;
+
 #ifndef nil
 #define nil NULL
 #endif

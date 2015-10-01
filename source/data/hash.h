@@ -32,6 +32,8 @@ void hash_init(hash_t* hash, hash_hashfn_t hashfn, hash_cmpfn_t cmpfn, hash_free
 
 void hash_deinit(hash_t* hash);
 
+size_t hash_size(hash_t* hash);
+
 bool hash_set(hash_t* hash, hash_entry_t* entry);
 
 hash_entry_t* hash_get(hash_t* hash, hash_entry_t* entry);
