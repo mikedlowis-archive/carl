@@ -9,6 +9,7 @@
 #include <stdbool.h>
 
 typedef struct hash_entry_t {
+    unsigned int hash;
     struct hash_entry_t* next;
 } hash_entry_t;
 
