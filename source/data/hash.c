@@ -7,7 +7,7 @@
 #include <data/hash.h>
 #include <stdlib.h>
 
-#define NUM_PRIMES (sizeof(primes)/sizeof(unsigned int))
+#define NUM_PRIMES (sizeof(Primes)/sizeof(unsigned int))
 
 static unsigned int Primes[] = {
     5, 13, 23, 53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593,
@@ -33,22 +33,24 @@ static void find_entry(hash_t* hash, hash_entry_t** parent, hash_entry_t** curre
 
 static void rehash(hash_t* hash)
 {
-    unsigned int oldcount = hash->bkt_count++;
-    hash_entry_t** oldbuckets = hash->buckets;
-    hash->buckets = (hash_entry_t**)calloc(sizeof(hash_entry_t*), num_buckets(hash->bkt_count));
-    hash->size = 0;
-    /* Iterate over all of the old buckets */
-    for (unsigned int i = 0; i < num_buckets(oldcount); i++) {
-        hash_entry_t* node = oldbuckets[i];
-        /* re-insert all entries in the bucket into the new bucket table */
-        while (node != NULL) {
-            hash_entry_t* entry = node;
-            node = entry->next;
-            hash_set(hash, entry);
+    if ((hash->bkt_count+1) < NUM_PRIMES) {
+        unsigned int oldcount = hash->bkt_count++;
+        hash_entry_t** oldbuckets = hash->buckets;
+        hash->buckets = (hash_entry_t**)calloc(sizeof(hash_entry_t*), num_buckets(hash->bkt_count));
+        hash->size = 0;
+        /* Iterate over all of the old buckets */
+        for (unsigned int i = 0; i < num_buckets(oldcount); i++) {
+            hash_entry_t* node = oldbuckets[i];
+            /* re-insert all entries in the bucket into the new bucket table */
+            while (node != NULL) {
+                hash_entry_t* entry = node;
+                node = entry->next;
+                hash_set(hash, entry);
+            }
         }
+        /* Free the old bucket table */
+        free(oldbuckets);
     }
-    /* Free the old bucket table */
-    free(oldbuckets);
 }
 
 void hash_init(hash_t* hash, hash_hashfn_t hashfn, hash_cmpfn_t cmpfn, hash_freefn_t delfn)
@@ -72,7 +74,7 @@ size_t hash_size(hash_t* hash)
     return hash->size;
 }
 
-bool hash_set(hash_t* hash, hash_entry_t* entry)
+void hash_set(hash_t* hash, hash_entry_t* entry)
 {
     if (hash->size >= num_buckets(hash->bkt_count))
         rehash(hash);
@@ -101,7 +103,6 @@ bool hash_set(hash_t* hash, hash_entry_t* entry)
     }
     if (deadite != NULL)
         hash->delfn(deadite);
-    return true;
 }
 
 hash_entry_t* hash_get(hash_t* hash, hash_entry_t* entry)
@@ -132,24 +133,22 @@ bool hash_del(hash_t* hash, hash_entry_t* entry)
             hash->buckets[index] = node;
         hash->delfn(deadite);
         ret = true;
+        hash->size--;
     }
     return ret;
 }
 
 void hash_clr(hash_t* hash)
 {
-    /* Delete all the entries  in the hash */
+    /* Delete all the entries in the hash */
     for (unsigned int i = 0; i < num_buckets(hash->bkt_count); i++) {
         hash_entry_t* node = hash->buckets[i];
+        hash->buckets[i] = NULL;
         while (node != NULL) {
             hash_entry_t* deadite = node;
             node = node->next;
             hash->delfn(deadite);
         }
     }
-    /* Shrink the buckets array */
-    free(hash->buckets);
-    hash->bkt_count = 0;
-    hash->buckets   = (hash_entry_t**)calloc(sizeof(hash_entry_t*), num_buckets(hash->bkt_count));
 }
 

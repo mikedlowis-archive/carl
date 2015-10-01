@@ -1,4 +1,3 @@
-
 // Unit Test Framework Includes
 #include "atf.h"
 
@@ -103,6 +102,76 @@ TEST_SUITE(Hash) {
             entry->val = (uint)rand();
             hash_set(&hash, &(entry->link));
             CHECK(&(entry->link) == hash_get(&hash, &(entry->link)));
+        }
+        hash_deinit(&hash);
+    }
+
+    TEST(Verify sequential inserts and deletions)
+    {
+        uint maxval = 1000000;
+        hash_t hash;
+        hash_init(&hash, hash_func, compare_func, delete_func);
+        for (uint i = 0; i < maxval; i++)
+        {
+            int_node_t* entry = (int_node_t*)malloc(sizeof(int_node_t));
+            entry->val = i;
+            hash_set(&hash, &(entry->link));
+            CHECK(i+1 == hash_size(&hash));
+            CHECK(&(entry->link) == hash_get(&hash, &(entry->link)));
+        }
+        for (uint i = 0; i < maxval; i++)
+        {
+            int_node_t search = { .val = i };
+            CHECK(hash_del(&hash, &(search.link)));
+            CHECK((maxval - (i+1)) == hash_size(&hash));
+        }
+        hash_deinit(&hash);
+    }
+
+    TEST(Verify reverse inserts and deletions)
+    {
+        uint maxval = 1000000;
+        hash_t hash;
+        hash_init(&hash, hash_func, compare_func, delete_func);
+        for (uint i = 0; i < maxval; i++)
+        {
+            int_node_t* entry = (int_node_t*)malloc(sizeof(int_node_t));
+            entry->val = maxval - i;
+            hash_set(&hash, &(entry->link));
+            CHECK(i+1 == hash_size(&hash));
+            CHECK(&(entry->link) == hash_get(&hash, &(entry->link)));
+        }
+        for (uint i = 0; i < maxval; i++)
+        {
+            int_node_t search = { .val = i+1 };
+            CHECK(hash_del(&hash, &(search.link)));
+            CHECK((maxval - (i+1)) == hash_size(&hash));
+        }
+        hash_deinit(&hash);
+    }
+
+    TEST(Verify ping pong hash inserts and deletions)
+    {
+        uint maxval = 1000000;
+        hash_t hash;
+        hash_init(&hash, hash_func, compare_func, delete_func);
+        for (uint i = 0; i < (maxval/2); i++) {
+            /* Insert the lower number */
+            int_node_t* entry = (int_node_t*)malloc(sizeof(int_node_t));
+            entry->val = i;
+            hash_set(&hash, &(entry->link));
+            CHECK(&(entry->link) == hash_get(&hash, &(entry->link)));
+            /* Insert the higher number */
+            entry = (int_node_t*)malloc(sizeof(int_node_t));
+            entry->val = maxval - i;
+            hash_set(&hash, &(entry->link));
+            CHECK(&(entry->link) == hash_get(&hash, &(entry->link)));
+        }
+        for (uint i = 0; i < maxval; i++)
+        {
+            int_node_t search = { .val = i };
+            if (hash_get(&hash, &(search.link)))
+                CHECK(hash_del(&hash, &(search.link)));
         }
         hash_deinit(&hash);
     }
