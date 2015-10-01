@@ -53,6 +53,37 @@ static void rehash(hash_t* hash)
     }
 }
 
+uint32_t hash_bytes(uint8_t* key, size_t len)
+{
+    uint32_t a=31415u, b=27183u, hash;
+    for (hash=0; len > 0; key++, len--, a*=b)
+        hash = (a * hash) + *key;
+    return hash32(hash);
+}
+
+uint64_t hash64(uint64_t key)
+{
+    key = (~key) + (key << 21); // key = (key << 21) - key - 1;
+    key = key ^ (key >> 24);
+    key = (key + (key << 3)) + (key << 8); // key * 265
+    key = key ^ (key >> 14);
+    key = (key + (key << 2)) + (key << 4); // key * 21
+    key = key ^ (key >> 28);
+    key = key + (key << 31);
+    return key;
+}
+
+uint32_t hash32(uint32_t key)
+{
+   key = (key+0x7ed55d16) + (key<<12);
+   key = (key^0xc761c23c) ^ (key>>19);
+   key = (key+0x165667b1) + (key<<5);
+   key = (key+0xd3a2646c) ^ (key<<9);
+   key = (key+0xfd7046c5) + (key<<3);
+   key = (key^0xb55a4f09) ^ (key>>16);
+   return key;
+}
+
 void hash_init(hash_t* hash, hash_hashfn_t hashfn, hash_cmpfn_t cmpfn, hash_freefn_t delfn)
 {
     hash->size      = 0;

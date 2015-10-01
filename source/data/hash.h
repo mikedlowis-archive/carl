@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef struct hash_entry_t {
     unsigned int hash;
@@ -27,6 +28,12 @@ typedef struct {
     hash_cmpfn_t cmpfn;
     hash_freefn_t delfn;
 } hash_t;
+
+uint32_t hash_bytes(uint8_t* key, size_t len);
+
+uint64_t hash64(uint64_t key);
+
+uint32_t hash32(uint32_t a);
 
 void hash_init(hash_t* hash, hash_hashfn_t hashfn, hash_cmpfn_t cmpfn, hash_freefn_t delfn);
 
