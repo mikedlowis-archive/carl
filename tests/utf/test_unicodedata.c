@@ -60,7 +60,7 @@ const cp_table_t runetypes[] = {
 };
 
 isrune_fn_t* lookup_codepoint(codept_t* cp) {
-    cp_table_t* types = &runetypes[0];
+    cp_table_t* types = (cp_table_t*)&runetypes[0];
     while((*types).category) {
         if (0 == strcmp((*types).category, cp->gencat))
             return (*types).fntable;
@@ -69,23 +69,49 @@ isrune_fn_t* lookup_codepoint(codept_t* cp) {
     return NULL;
 }
 
+char *strnxttok(char *s, const char *sep) {
+    static char *p;
+    if (!s && !(s = p)) return NULL;
+    if (!*s) return p = 0;
+    p = s + strcspn(s, sep);
+    if (*p) *p++ = 0;
+    else p = 0;
+    return s;
+}
+
 bool read_codepoint(codept_t* ch, FILE* db) {
     if (fgets(line, 1023, db)) {
-        ch->value = strtoul(strtok(line, ";"), NULL, 16);
-        strtok(NULL, ";"); // Description
-        ch->gencat = strdup(strtok(NULL, ";")); // General Category
-        strtok(NULL, ";"); // Class
-        ch->bidircat = strdup(strtok(NULL, ";")); // Bidirectional Category
-        strtok(NULL, ";"); // Decompositional Map
-        strtok(NULL, ";"); // Decimal Value
-        strtok(NULL, ";"); // Digit Value
-        strtok(NULL, ";"); // Numeric Value
-        strtok(NULL, ";"); // Mirrored
-        strtok(NULL, ";"); // UTF 1.0 Name
-        strtok(NULL, ";"); // Comment
-        strtok(NULL, ";"); // To Upper
-        strtok(NULL, ";"); // To Lower
-        strtok(NULL, ";"); // To Title
+        // Base value
+        char* tok = strnxttok(line, ";");
+        ch->value = strtoul(tok, NULL, 16);
+
+        // Unused
+        tok = strnxttok(NULL, ";");
+
+        // General Category
+        tok = strnxttok(NULL, ";");
+        ch->gencat = strdup(tok);
+
+        // Unused
+        tok = strnxttok(NULL, ";");
+
+        // Bidirectional Category
+        tok = strnxttok(NULL, ";");
+        ch->bidircat = strdup(tok);
+
+        // Skip irrelevant fields
+        tok = strnxttok(NULL, ";");
+        tok = strnxttok(NULL, ";");
+        tok = strnxttok(NULL, ";");
+        tok = strnxttok(NULL, ";");
+        tok = strnxttok(NULL, ";");
+        tok = strnxttok(NULL, ";");
+        tok = strnxttok(NULL, ";");
+
+        // Get the upper, lower, and title case of the rune
+        ch->toupper = strtoul(strnxttok(NULL, ";"), NULL, 16);
+        ch->tolower = strtoul(strnxttok(NULL, ";"), NULL, 16);
+        ch->totitle = strtoul(strnxttok(NULL, ";"), NULL, 16);
         return true;
     }
     return false;
@@ -101,17 +127,22 @@ void free_codepoint(codept_t* cp) {
 //-----------------------------------------------------------------------------
 TEST_SUITE(UnicodeData) {
     TEST(Verify_runetype_functions) {
-        bool test_passing = true;
         codept_t cp;
         FILE* db = fopen(database, "r");
-        while(test_passing && read_codepoint(&cp, db)) {
+        while(read_codepoint(&cp, db)) {
             isrune_fn_t* fns = lookup_codepoint(&cp);
             while(fns && *fns) {
-                bool test_passing = (*fns)(cp.value);
-                if (!test_passing) {
-                    fprintf(stderr, "Failed to handle codepoint: %x\n", cp.value);
-                    break;
-                }
+                /* Verify the type function works as expected */
+                CHECK((*fns)(cp.value));
+                /* Verify toupper works if necessary */
+                if (cp.toupper > 0)
+                    CHECK( cp.toupper == toupperrune(cp.value) );
+                /* Verify tolower works if necessary */
+                if (cp.tolower > 0)
+                    CHECK( cp.tolower == tolowerrune(cp.value) );
+                /* Verify toupper works if necessary */
+                if (cp.totitle > 0)
+                    CHECK( cp.totitle == totitlerune(cp.value) );
                 fns++;
             }
             free_codepoint(&cp);
