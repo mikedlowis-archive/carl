@@ -14,5 +14,6 @@ int main(int argc, char** argv)
     RUN_EXTERN_TEST_SUITE(BSTree);
     RUN_EXTERN_TEST_SUITE(Hash);
     RUN_EXTERN_TEST_SUITE(UnicodeData);
+    RUN_EXTERN_TEST_SUITE(Runes);
     return (PRINT_TEST_RESULTS());
 }

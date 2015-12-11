@@ -51,12 +51,13 @@ SRCS = source/data/bstree.c               \
        source/utf/runetype.c
 OBJS = ${SRCS:.c=.o}
 
-TEST_SRCS = tests/data/bstree.c \
-            tests/data/hash.c   \
-            tests/data/slist.c  \
-            tests/atf.c         \
-            tests/main.c        \
-            tests/refcount.c    \
+TEST_SRCS = tests/data/bstree.c    \
+            tests/data/hash.c      \
+            tests/data/slist.c     \
+            tests/atf.c            \
+            tests/main.c           \
+            tests/refcount.c       \
+            tests/utf/test_runes.c \
             tests/utf/test_unicodedata.c
 TEST_OBJS = ${TEST_SRCS:.c=.o}
 
