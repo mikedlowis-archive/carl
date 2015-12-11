@@ -126,25 +126,25 @@ void free_codepoint(codept_t* cp) {
 // Begin Unit Tests
 //-----------------------------------------------------------------------------
 TEST_SUITE(UnicodeData) {
-    TEST(Verify_runetype_functions) {
+    TEST(Verify_generated_rune_functions) {
         codept_t cp;
         FILE* db = fopen(database, "r");
         while(read_codepoint(&cp, db)) {
             isrune_fn_t* fns = lookup_codepoint(&cp);
+            /* Verify the type functions work as expected */
             while(fns && *fns) {
-                /* Verify the type function works as expected */
                 CHECK((*fns)(cp.value));
-                /* Verify toupper works if necessary */
-                if (cp.toupper > 0)
-                    CHECK( cp.toupper == toupperrune(cp.value) );
-                /* Verify tolower works if necessary */
-                if (cp.tolower > 0)
-                    CHECK( cp.tolower == tolowerrune(cp.value) );
-                /* Verify toupper works if necessary */
-                if (cp.totitle > 0)
-                    CHECK( cp.totitle == totitlerune(cp.value) );
                 fns++;
             }
+            /* Verify toupper works if necessary */
+            if (cp.toupper > 0)
+                CHECK( cp.toupper == toupperrune(cp.value) );
+            /* Verify tolower works if necessary */
+            if (cp.tolower > 0)
+                CHECK( cp.tolower == tolowerrune(cp.value) );
+            /* Verify toupper works if necessary */
+            if (cp.totitle > 0)
+                CHECK( cp.totitle == totitlerune(cp.value) );
             free_codepoint(&cp);
         }
         fclose(db);
