@@ -15,53 +15,66 @@ CFLAGS   += ${INCS} ${CPPFLAGS}
 LDFLAGS  += ${LIBS}
 ARFLAGS   = rcs
 
+# commands
+COMPILE = @echo CC $@; ${CC} ${CFLAGS} -c -o $@ $<
+LINK    = @echo LD $@; ${LD} -o $@ $^ ${LDFLAGS}
+ARCHIVE = @echo AR $@; ${AR} ${ARFLAGS} $@ $^
+CLEAN   = @rm -f
+
 #------------------------------------------------------------------------------
 # Build Targets and Rules
 #------------------------------------------------------------------------------
-SRCS = source/data/bstree.c               \
-       source/data/hash.c                 \
-       source/data/list.c                 \
-       source/data/slist.c                \
-       source/data/vec.c                  \
-       source/main.c                      \
-       source/refcount.c                  \
-       source/utf/chartorune.c            \
-       source/utf/fullrune.c              \
-       source/utf/runecmp.c               \
-       source/utf/runeinrange.c           \
-       source/utf/runelen.c               \
-       source/utf/runenlen.c              \
-       source/utf/runetochar.c            \
-       source/utf/runetype/alphas.c       \
-       source/utf/runetype/controls.c     \
-       source/utf/runetype/digits.c       \
-       source/utf/runetype/lowers.c       \
-       source/utf/runetype/marks.c        \
-       source/utf/runetype/numbers.c      \
-       source/utf/runetype/other.c        \
-       source/utf/runetype/otherletters.c \
-       source/utf/runetype/punctuation.c  \
-       source/utf/runetype/spaces.c       \
-       source/utf/runetype/symbols.c      \
-       source/utf/runetype/titles.c       \
-       source/utf/runetype/tolower.c      \
-       source/utf/runetype/totitle.c      \
-       source/utf/runetype/toupper.c      \
-       source/utf/runetype/uppers.c       \
-       source/utf/runetype.c
-OBJS = ${SRCS:.c=.o}
+LIBNAME = carl
+LIB  = lib${LIBNAME}.a
 
-TEST_SRCS = tests/data/bstree.c    \
-            tests/data/hash.c      \
-            tests/data/slist.c     \
-            tests/atf.c            \
-            tests/main.c           \
-            tests/refcount.c       \
-            tests/utf/test_runes.c \
-            tests/utf/test_unicodedata.c
-TEST_OBJS = ${TEST_SRCS:.c=.o}
+DEPS = ${OBJS:.o=.d}
+OBJS = source/data/bstree.o               \
+       source/data/hash.o                 \
+       source/data/list.o                 \
+       source/data/slist.o                \
+       source/data/vec.o                  \
+       source/main.o                      \
+       source/refcount.o                  \
+       source/utf/chartorune.o            \
+       source/utf/fullrune.o              \
+       source/utf/runecmp.o               \
+       source/utf/runeinrange.o           \
+       source/utf/runelen.o               \
+       source/utf/runenlen.o              \
+       source/utf/runetochar.o            \
+       source/utf/runetype/alphas.o       \
+       source/utf/runetype/controls.o     \
+       source/utf/runetype/digits.o       \
+       source/utf/runetype/lowers.o       \
+       source/utf/runetype/marks.o        \
+       source/utf/runetype/numbers.o      \
+       source/utf/runetype/other.o        \
+       source/utf/runetype/otherletters.o \
+       source/utf/runetype/punctuation.o  \
+       source/utf/runetype/spaces.o       \
+       source/utf/runetype/symbols.o      \
+       source/utf/runetype/titles.o       \
+       source/utf/runetype/tolower.o      \
+       source/utf/runetype/totitle.o      \
+       source/utf/runetype/toupper.o      \
+       source/utf/runetype/uppers.o       \
+       source/utf/runetype.o
 
-all: options libcarl.a testcarl
+TEST_BIN  = test${LIBNAME}
+TEST_DEPS = ${TEST_OBJS:.o=.d}
+TEST_OBJS = tests/data/bstree.o    \
+            tests/data/hash.o      \
+            tests/data/slist.o     \
+            tests/atf.o            \
+            tests/main.o           \
+            tests/refcount.o       \
+            tests/utf/test_runes.o \
+            tests/utf/test_unicodedata.o
+
+# load user-specific settings
+-include config.mk
+
+all: options ${LIB} tests
 
 options:
 	@echo "Toolchain Configuration:"
@@ -72,21 +85,27 @@ options:
 	@echo "  AR       = ${AR}"
 	@echo "  ARFLAGS  = ${ARFLAGS}"
 
-libcarl.a: ${OBJS}
-	@echo AR $@
-	@${AR} ${ARFLAGS} $@ ${OBJS}
+tests: ${TEST_BIN}
 
-testcarl: ${TEST_OBJS} libcarl.a
-	@echo LD $@
-	@${LD} -o $@ ${TEST_OBJS} libcarl.a ${LDFLAGS}
-	-./$@
+${LIB}: ${OBJS}
+	${ARCHIVE}
+
+${TEST_BIN}: ${TEST_OBJS} ${LIB}
+	${LINK}
+	@./$@
 
 .c.o:
-	@echo CC $<
-	@${CC} ${CFLAGS} -c -o $@ $<
+	${COMPILE}
 
 clean:
-	@rm -f libcarl.a testcarl ${OBJS} ${TEST_OBJS}
+	${CLEAN} ${LIB} ${TEST_BIN} ${OBJS} ${TEST_OBJS}
+	${CLEAN} ${OBJS:.o=.gcno} ${OBJS:.o=.gcda}
+	${CLEAN} ${TEST_OBJS:.o=.gcno} ${TEST_OBJS:.o=.gcda}
+	${CLEAN} ${DEPS} ${TEST_DEPS}
 
-.PHONY: all options
+# load dependency files
+-include ${DEPS}
+-include ${TEST_DEPS}
+
+.PHONY: all options tests
 

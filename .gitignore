@@ -3,6 +3,8 @@
 *.ko
 *.obj
 *.elf
+*.gcno
+*.gcda
 
 # Precompiled Headers
 *.gch
@@ -31,8 +33,5 @@
 # Debug files
 *.dSYM/
 .rsconscache
-test_libc
-test_libc.exe
 *.d
-.ninja_deps
-.ninja_log
+config.mk
