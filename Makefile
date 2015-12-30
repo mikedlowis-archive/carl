@@ -79,7 +79,7 @@ TEST_OBJS = tests/data/bstree.o    \
 DISTDIR   = ${LIBNAME}-${VERSION}
 DISTTAR   = ${DISTDIR}.tar
 DISTGZ    = ${DISTTAR}.gz
-DISTFILES = config.mk LICENSE.md Makefile README.md source tests
+DISTFILES = config.mk LICENSE.md Makefile README.md source tests tools
 
 # load user-specific settings
 -include config.mk
