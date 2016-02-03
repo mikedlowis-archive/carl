@@ -31,12 +31,7 @@ CLEAN   = @rm -f
 LIBNAME = carl
 LIB     = lib${LIBNAME}.a
 DEPS    = ${OBJS:.o=.d}
-OBJS    = source/data/bstree.o               \
-          source/data/hash.o                 \
-          source/data/list.o                 \
-          source/data/slist.o                \
-          source/data/vec.o                  \
-          source/main.o                      \
+OBJS    = source/main.o                      \
           source/refcount.o                  \
           source/utf/chartorune.o            \
           source/utf/fullrune.o              \
