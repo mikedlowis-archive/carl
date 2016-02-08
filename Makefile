@@ -64,6 +64,7 @@ TEST_DEPS = ${TEST_OBJS:.o=.d}
 TEST_OBJS = tests/data/bstree.o    \
             tests/data/hash.o      \
             tests/data/slist.o     \
+            tests/data/list.o      \
             tests/atf.o            \
             tests/main.o           \
             tests/refcount.o       \
